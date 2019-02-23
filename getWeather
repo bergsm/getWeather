@@ -43,14 +43,21 @@ def get_weather(coord):
     weather_obj = json.loads(r.text)
     return weather_obj
 
+# convert degress into cardinal direction
+def get_Dir(degrees):
+    cardinal = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW']
+    return cardinal[int(round(degrees/45.0))]
+
+
 # parse out relevant forecast
 def get_forecast():
-    weather = get_weather(get_loc())
-    #forecast = get_weather(get_loc())['daily']['data'][0]['summary']
     forecast = get_weather(get_loc())['currently']
-    for each in forecast:
-        print each
-    return forecast
+    temp = str(forecast['temperature']) + "F "
+    windSpeed = str(forecast['windSpeed']) + " mph "
+    windDir = get_Dir(int(forecast['windBearing']))
+    summary = " " + str(forecast['summary'])
+    output = "Current Weather: " + temp + windSpeed + windDir + summary
+    return output
 
-get_forecast()
+
 print(get_forecast())
