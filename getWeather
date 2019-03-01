@@ -7,20 +7,34 @@ import datetime
 import time
 import sys
 import os
-programDir = os.path.dirname(os.path.abspath(__file__))
+thisDir = os.path.dirname(os.path.abspath(__file__))
 
 # api tokens
 weather_api_token = '288eaa3e24928fe1624619297e907e5b'
 geoip_api_token = 'access_key=706012c40c1b18043fdcba7c996911bd' # create account at https://darksky.net/dev/
 
+def STALE_TIME(min):
+    return min * 60
 
-#TODO implement cache system with 20 min refresh period
 def check_cache():
-    # if < 20 min from timestamp in cache
-        # return true
-#TODO
-def return_cache():
-    # return data from cache
+    try:
+        with open(thisDir + "/weatherCache", 'r') as f:
+            last = float(f.readline())
+            # if < 20 min from timestamp in cache
+            if time.time() - last < STALE_TIME(20):
+                return True
+            else:
+                return False
+    except:
+        return False
+
+def get_cache():
+    with open(thisDir + "/weatherCache", 'r') as f:
+        output = ""
+        lines = f.readlines()[1:]
+        for line in lines:
+            output += line
+        return output
 
 # function to get ip address
 def get_ip():
@@ -71,21 +85,29 @@ def get_Dir(degrees):
 
 # parse out relevant forecast
 def get_forecast():
-    #TODO
-    # if check_cache
-        #return cache data
-    weather = get_weather(get_loc())
-    #start = time.time()
-    temp = str(weather['currently']['temperature']) + "F "
-    windSpeed = str(weather['currently']['windSpeed']) + " mph "
-    windDir = get_Dir(int(weather['currently']['windBearing']))
-    condition = " " + str(weather['currently']['summary'])
-    summary = "\nForecast: " + str(weather['daily']['data'][0]['summary'].encode('utf-8'))
-    output = "Current weather: " + temp + windSpeed + windDir + condition + summary
-    #end = time.time()
-    #print("get_forecast takes " + str(end-start) + " seconds")
-    #TODO write to cache
-    return output
+    if check_cache():
+        return get_cache()
+    else:
+        # gather weather information
+        weather = get_weather(get_loc())
+        #start = time.time()
+        temp = str(weather['currently']['temperature']) + "F "
+        windSpeed = str(weather['currently']['windSpeed']) + " mph "
+        windDir = get_Dir(int(weather['currently']['windBearing']))
+        condition = " " + str(weather['currently']['summary'])
+        summary = "\nForecast: " + str(weather['daily']['data'][0]['summary'].encode('utf-8'))
+        output = "Current weather: " + temp + windSpeed + windDir + condition + summary
+
+        # timing functions
+        #end = time.time()
+        #print("get_forecast takes " + str(end-start) + " seconds")
+
+        #write to cache
+        f = open(thisDir + "/weatherCache", 'w+')
+        f.write(str(time.time())+ '\n')
+        f.write(output)
+
+        return output
 
 
 print(get_forecast())
