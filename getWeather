@@ -14,6 +14,13 @@ weather_api_token = '288eaa3e24928fe1624619297e907e5b'
 geoip_api_token = 'access_key=706012c40c1b18043fdcba7c996911bd' # create account at https://darksky.net/dev/
 
 
+#TODO implement cache system with 20 min refresh period
+def check_cache():
+    # if < 20 min from timestamp in cache
+        # return true
+#TODO
+def return_cache():
+    # return data from cache
 
 # function to get ip address
 def get_ip():
@@ -56,7 +63,7 @@ def get_weather(coord):
 # convert degress into cardinal direction
 def get_Dir(degrees):
     #start = time.time()
-    cardinal = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW']
+    cardinal = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW', 'N']
     #end = time.time()
     #print("get_Dir takes " + str(end-start) + " seconds")
     return cardinal[int(round(degrees/45.0))]
@@ -64,6 +71,9 @@ def get_Dir(degrees):
 
 # parse out relevant forecast
 def get_forecast():
+    #TODO
+    # if check_cache
+        #return cache data
     weather = get_weather(get_loc())
     #start = time.time()
     temp = str(weather['currently']['temperature']) + "F "
@@ -74,6 +84,7 @@ def get_forecast():
     output = "Current weather: " + temp + windSpeed + windDir + condition + summary
     #end = time.time()
     #print("get_forecast takes " + str(end-start) + " seconds")
+    #TODO write to cache
     return output
 
 
