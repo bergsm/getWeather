@@ -1,11 +1,8 @@
 #!/usr/bin/python
 
-import smtplib
 import requests
 import json
-import datetime
 import time
-import sys
 import os
 thisDir = os.path.dirname(os.path.abspath(__file__))
 
@@ -38,13 +35,10 @@ def get_cache():
 
 # function to get ip address
 def get_ip():
-    #start = time.time()
     try:
         ip_url = "http://jsonip.com/"
         req = requests.get(ip_url)
         ip_json = json.loads(req.text)
-        #end = time.time()
-        #print("get_ip takes " + str(end-start) + " seconds")
         return ip_json['ip']
     except Exception as e:
         f.write("Error: %s." %e)
@@ -54,32 +48,23 @@ def get_ip():
 # get lat and lon location from ip address
 def get_loc():
     location_req_url = "http://api.ipstack.com/%s?%s" % (get_ip(), geoip_api_token)
-    #start = time.time()
     r = requests.get(location_req_url)
     location_obj = json.loads(r.text)
     lat = location_obj['latitude']
     lon = location_obj['longitude']
-    #end = time.time()
-    #print("get_loc takes " + str(end-start) + " seconds")
     return [lat, lon]
 
 
 # get weather from latitude and longitude
 def get_weather(coord):
-    #start = time.time()
     weather_req_url = "https://api.darksky.net/forecast/%s/%s,%s?lang=%s&units=%s" % (weather_api_token, coord[0], coord[1], 'en','us')
     r = requests.get(weather_req_url)
     weather_obj = json.loads(r.text)
-    #end = time.time()
-    #print("get_weather takes " + str(end-start) + " seconds")
     return weather_obj
 
 # convert degress into cardinal direction
 def get_Dir(degrees):
-    #start = time.time()
     cardinal = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW', 'N']
-    #end = time.time()
-    #print("get_Dir takes " + str(end-start) + " seconds")
     return cardinal[int(round(degrees/45.0))]
 
 
@@ -90,17 +75,12 @@ def get_forecast():
     else:
         # gather weather information
         weather = get_weather(get_loc())
-        #start = time.time()
         temp = str(weather['currently']['temperature']) + "F "
         windSpeed = str(weather['currently']['windSpeed']) + " mph "
         windDir = get_Dir(int(weather['currently']['windBearing']))
         condition = " " + str(weather['currently']['summary'])
         summary = "\nForecast: " + str(weather['daily']['data'][0]['summary'].encode('utf-8'))
         output = "Current weather: " + temp + windSpeed + windDir + condition + summary
-
-        # timing functions
-        #end = time.time()
-        #print("get_forecast takes " + str(end-start) + " seconds")
 
         #write to cache
         f = open(thisDir + "/weatherCache", 'w+')
