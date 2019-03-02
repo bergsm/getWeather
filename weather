@@ -13,6 +13,7 @@ geoip_api_token = 'access_key=706012c40c1b18043fdcba7c996911bd' # create account
 def STALE_TIME(min):
     return min * 60
 
+# check if the cache is stale
 def check_cache():
     try:
         with open(thisDir + "/weatherCache", 'r') as f:
@@ -25,6 +26,7 @@ def check_cache():
     except:
         return False
 
+# return cache contents
 def get_cache():
     with open(thisDir + "/weatherCache", 'r') as f:
         output = ""
