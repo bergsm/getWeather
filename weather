@@ -85,9 +85,13 @@ def get_forecast():
         output = "Current weather: " + temp + windSpeed + windDir + condition + summary
 
         #write to cache
-        f = open(thisDir + "/weatherCache", 'w+')
-        f.write(str(time.time())+ '\n')
-        f.write(output)
+        try:
+            f = open(thisDir + "/weatherCache", 'w+')
+            f.write(str(time.time())+ '\n')
+            f.write(output)
+        except:
+            # skip the cache
+            pass
 
         return output
 
