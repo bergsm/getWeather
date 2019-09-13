@@ -4,7 +4,6 @@ import requests
 import json
 import time
 import os
-thisDir = os.path.dirname(os.path.abspath(__file__))
 
 # api tokens
 weather_api_token = '288eaa3e24928fe1624619297e907e5b'
@@ -16,7 +15,7 @@ def STALE_TIME(min):
 # check if the cache is stale
 def check_cache():
     try:
-        with open(thisDir + "/weatherCache", 'r') as f:
+        with open("/var/cache/weatherCache", 'r') as f:
             last = float(f.readline())
             # if < 20 min from timestamp in cache
             if time.time() - last < STALE_TIME(20):
@@ -28,7 +27,7 @@ def check_cache():
 
 # return cache contents
 def get_cache():
-    with open(thisDir + "/weatherCache", 'r') as f:
+    with open("/var/cache/weatherCache", 'r') as f:
         output = ""
         lines = f.readlines()[1:]
         for line in lines:
@@ -86,7 +85,7 @@ def get_forecast():
 
         #write to cache
         try:
-            f = open(thisDir + "/weatherCache", 'w+')
+            f = open("/var/cache/weatherCache", 'w+')
             f.write(str(time.time())+ '\n')
             f.write(output)
         except:
